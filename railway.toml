@@ -1,0 +1,54 @@
+[build]
+builder = "dockerfile"
+dockerfile = "Dockerfile"
+
+[deploy]
+startCommand = "./railway-start.sh"
+healthcheckCommand = "./railway-health-check.sh"
+healthcheckTimeout = 300
+healthcheckInterval = 60
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[env]
+RUST_LOG = "info"
+
+[[services]]
+name = "pageserver"
+internal_port = 9898
+protocol = "http"
+
+[[services.ports]]
+port = 9898
+internal_port = 9898
+
+[[services]]
+name = "storage_broker"
+internal_port = 50051
+protocol = "tcp"
+
+[[services.ports]]
+port = 50051
+internal_port = 50051
+
+[[services]]
+name = "safekeeper1"
+internal_port = 7676
+protocol = "http"
+
+[[services.ports]]
+port = 7676
+internal_port = 7676
+
+[[services]]
+name = "compute"
+internal_port = 55433
+protocol = "tcp"
+
+[[services.ports]]
+port = 55433
+internal_port = 55433
+
+[mounts]
+source = "data"
+destination = "/data"
