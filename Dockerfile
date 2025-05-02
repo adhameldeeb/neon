@@ -87,7 +87,7 @@ RUN set -e \
         postgresql-15 \
         openssl \
         curl \
-        netcat \
+        netcat-openbsd \
     && rm -f /etc/apt/apt.conf.d/80-retries \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && useradd -d /data neon \
