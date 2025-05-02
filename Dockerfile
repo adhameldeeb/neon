@@ -12,16 +12,20 @@ ARG STABLE_PG_VERSION=16
 FROM $REPOSITORY/$IMAGE:$TAG AS pg-build
 WORKDIR /home/nonroot
 
-COPY --chown=nonroot vendor/postgres-v14 vendor/postgres-v14
-COPY --chown=nonroot vendor/postgres-v15 vendor/postgres-v15
-COPY --chown=nonroot vendor/postgres-v16 vendor/postgres-v16
-COPY --chown=nonroot vendor/postgres-v17 vendor/postgres-v17
-COPY --chown=nonroot pgxn pgxn
-COPY --chown=nonroot Makefile Makefile
-COPY --chown=nonroot scripts/ninstall.sh scripts/ninstall.sh
+# Install git if needed
+RUN apt-get update && apt-get install -y git
+
+# Clone the repository with submodules
+RUN git clone --recursive https://github.com/neondatabase/neon.git /tmp/neon && \
+    cp -r /tmp/neon/vendor/postgres-v* /home/nonroot/ && \
+    cp -r /tmp/neon/pgxn /home/nonroot/ && \
+    cp /tmp/neon/Makefile /home/nonroot/ && \
+    cp /tmp/neon/scripts/ninstall.sh /home/nonroot/scripts/ && \
+    rm -rf /tmp/neon
 
 ENV BUILD_TYPE=release
 RUN set -e \
+    && mkdir -p scripts \
     && mold -run make -j $(nproc) -s neon-pg-ext \
     && rm -rf pg_install/build \
     && tar -C pg_install -czf /home/nonroot/postgres_install.tar.gz .
