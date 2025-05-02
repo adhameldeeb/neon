@@ -1,6 +1,6 @@
 [build]
 builder = "dockerfile"
-dockerfile = "Dockerfile.railway"
+dockerfile = "Dockerfile"
 
 [deploy]
 startCommand = "./railway-start.sh"
